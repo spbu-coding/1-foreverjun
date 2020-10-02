@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define EXPERIMENT_NUMBER 6
 #define MAX_CELL_SIZE 30
 #define PI 3.141592653
 #define error(...) (fprintf(stderr,__VA_ARGS__))
@@ -31,14 +30,14 @@ void free_string_array (char** result,int experiments_count){
     }
     free(result);
 }
-char** fills_in_array(int *partition_counts,double left_border,double right_border) {
+char** fills_in_array(int *partition_counts,double left_border,double right_border,int experiment_number) {
     int i;
-    char **result=(char**)malloc(sizeof(char*)*EXPERIMENT_NUMBER);
+    char **result=(char**)malloc(sizeof(char*)*experiment_number);
     if(!result){
         error("Can not allocate memory for **result\n");
         return NULL;
     }
-    for (i = 0; i < EXPERIMENT_NUMBER; i++) {
+    for (i = 0; i < experiment_number; i++) {
         result[i]=(char*)malloc(sizeof(char)*MAX_CELL_SIZE);
         if(!result[i]){
             error("Can not allocate memory for result[%d]\n",i);
@@ -92,18 +91,19 @@ int main() {
     if(read_interval(&left_border,&right_border)){
         return 1;
     }
-    int partition_counts[EXPERIMENT_NUMBER] ={6,10,20,100,500,1000};
-    char** result = fills_in_array(partition_counts,left_border,right_border);
+    int partition_counts[] ={6,10,20,100,500,1000};
+    int experiment_number=sizeof(partition_counts)/sizeof(partition_counts[0]);
+    char** result = fills_in_array(partition_counts,left_border,right_border,experiment_number);
     if(!result) {
         return 1;
     }
-    for (int i = 0; i < EXPERIMENT_NUMBER; ++i) {
+    for (int i = 0; i < experiment_number; ++i) {
         if(printf("%s\n",result[i])<0){
             error("Can not write result[%d] to stdout",i);
-            free_string_array(result,EXPERIMENT_NUMBER);
+            free_string_array(result,experiment_number);
             return 1;
         }
     }
-    free_string_array(result,EXPERIMENT_NUMBER);
+    free_string_array(result,experiment_number);
     return 0;
 }
